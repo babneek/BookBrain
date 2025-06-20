@@ -1,13 +1,13 @@
 # BookBrain 📘
 
-A modern, open-source app for uploading EPUB, PDF, or Wiki content, extracting chapters, and generating AI-powered summaries, reviews, MCQs, and Q&A with a beautiful, user-friendly interface.
+BookBrain is a modern, open-source app for reading, exploring, and learning from books and documents using AI. Upload EPUB, PDF, or Wiki content, extract chapters, and generate AI-powered summaries, reviews, MCQs, and Q&A—all with a beautiful, user-friendly interface.
 
 ---
 
 ## Features
 
 - **Upload EPUB, PDF, or Wiki (Wikipedia/Wikisource) content**
-- **Automatic chapter extraction** with dropdown chapter selection
+- **Automatic chapter extraction** with a dropdown for easy chapter selection
 - **Per-chapter features:**
   - Generate summaries, reviews, and MCQs for the selected chapter
   - Take MCQ quizzes with instant feedback, scoring, and motivational messages
@@ -22,10 +22,22 @@ A modern, open-source app for uploading EPUB, PDF, or Wiki content, extracting c
 
 ---
 
-## Demo & Source
+## How It Works
 
-- **GitHub:** [https://github.com/babneek/BookBrain](https://github.com/babneek/BookBrain)
-- **Author:** [babneek](https://github.com/babneek)
+1. **Upload Content:**
+   - Upload an EPUB, PDF, or enter a Wiki URL.
+   - The app extracts chapters automatically and displays them in a dropdown.
+2. **Select a Chapter:**
+   - Choose any chapter to work with. The chapter list stays until you upload new content.
+3. **Explore Features:**
+   - **Summary:** Get a detailed, multi-paragraph summary of the selected chapter.
+   - **Review:** Generate a comprehensive review, including themes and analysis.
+   - **MCQ Quiz:** Instantly generate and take a quiz for the chapter, with feedback and scoring.
+   - **Q/A:** Ask any question about the selected chapter and get a detailed, context-aware answer.
+4. **Edit, Regenerate, Download:**
+   - All AI outputs can be edited, regenerated, or downloaded for your notes.
+5. **Navigation:**
+   - Use the sidebar to switch between features. The UI is modern, colorful, and easy to use.
 
 ---
 
@@ -42,18 +54,14 @@ cd BookBrain
 pip install -r requirements.txt
 ```
 
-### 3. Install and run Ollama (for Mistral LLM)
-- [Ollama install instructions](https://ollama.com/download)
-- Pull the Mistral model:
-  ```bash
-  ollama pull mistral
-  ```
-- Start the Ollama server (usually runs at `http://localhost:11434` by default).
-
-### 4. Install Playwright browsers
+### 3. Install Playwright browsers (for Wiki scraping)
 ```bash
 playwright install
 ```
+
+### 4. Configure your LLM API
+- BookBrain uses OpenRouter, OpenAI, or your preferred LLM API for all AI features.
+- Set your API key in a `.env` file or as an environment variable (see `.env.example` if provided).
 
 ### 5. Run the app
 ```bash
@@ -74,27 +82,24 @@ streamlit run streamlit_app.py
 
 ---
 
-## Screenshots
-
-> Add your screenshots here for a visual overview!
-
----
-
 ## Troubleshooting
 
-- **Ollama not running:** Make sure the Ollama server is running and the Mistral model is pulled.
+- **API errors:** Make sure your LLM API key is set and valid.
 - **Playwright errors:** Run `playwright install` and ensure you have the required browsers.
 - **ChromaDB issues:** The app stores embeddings in `./chroma_data` by default.
 - **Q/A or MCQ not working:** Make sure you have selected a chapter and uploaded valid content.
 
 ---
 
-## License & Evaluation
+## Screenshots
 
-This project is for evaluation/demo purposes only.
+> Add your screenshots here for a visual overview!
 
 ---
 
-## Contributing
+## License & Contributing
 
-Pull requests and feedback are welcome! See [https://github.com/babneek/BookBrain](https://github.com/babneek/BookBrain) for issues and updates. 
+This project is for evaluation/demo purposes only. Pull requests and feedback are welcome!
+
+- **GitHub:** [https://github.com/babneek/BookBrain](https://github.com/babneek/BookBrain)
+- **Author:** [babneek](https://github.com/babneek) 
