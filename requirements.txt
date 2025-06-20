@@ -1,0 +1,10 @@
+streamlit
+playwright
+chromadb
+sentence-transformers
+openai
+python-dotenv
+ebooklib
+beautifulsoup4
+PyPDF2
+wikipedia

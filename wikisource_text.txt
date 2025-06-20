@@ -1,0 +1,10 @@
+Error
+
+If you report this error to the Wikimedia System Administrators, please include the details below.
+
+Request served via cp5018 cp5018, Varnish XID 64240595
+Upstream caches: cp5018 int
+Error: 429, at Fri, 20 Jun 2025 08:37:40 GMT
+
+
+Sensitive client information
