@@ -72,25 +72,26 @@ streamlit run streamlit_app.py
 
 ## 🚀 Deployment
 
-### Railway (Recommended Free Option) ⭐
+### Render (Best Free Option) ⭐
 
-Railway offers a great free tier with a simple deployment process. It's an excellent choice for hosting BookBrain.
+Render offers the best free tier for BookBrain - **750 hours/month free forever**. It's the perfect choice for hosting your project.
 
-1.  **Sign up** at [railway.app](https://railway.app) with your GitHub account.
-2.  **Click "New Project"** and select "Deploy from GitHub repo".
-3.  **Select your BookBrain repository**. Railway will automatically detect the settings.
-4.  **Go to the "Variables" tab** for your new service and add your API key:
+1.  **Sign up** at [render.com](https://render.com) with your GitHub account.
+2.  **Click "New +"** and select "Web Service".
+3.  **Connect your GitHub** and select your BookBrain repository.
+4.  **Configure the service:**
+    *   Name: `bookbrain-app`
+    *   Environment: `Python 3`
+    *   Build Command: `pip install -r requirements.txt && playwright install --with-deps`
+    *   Start Command: `streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0`
+5.  **Go to the "Environment" tab** and add your API key:
     *   `OPENAI_API_KEY`: Your key from OpenRouter or OpenAI
-    *   `OPENROUTER_MODEL`: (Optional) The model name, e.g., `mistralai/mistral-7b-instruct`
-5.  **Go to the "Settings" tab** and generate a domain to get a public URL.
-
-That's it! Railway's Nixpacks builder will automatically install Python dependencies and Playwright browsers for you.
-
-**Live Demo:** [BookBrain on Railway](https://bookbrain.up.railway.app) *(Coming soon)*
+    *   `OPENROUTER_MODEL`: (Optional) The model name.
+6.  **Deploy!** Your app will be live in minutes on a free `.onrender.com` URL.
 
 ### Alternative Deployment Options
 
--   **Render:** A great free alternative. Use the `render.yaml` config.
+-   **Railway:** A great platform, but the free trial expires.
 -   **AWS App Runner:** Powerful, with a 12-month free tier.
 -   **Streamlit Cloud:** Simple, but may have compatibility issues with ChromaDB.
 -   **Local:** Follow the setup instructions in this README.
