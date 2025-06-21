@@ -72,33 +72,37 @@ streamlit run streamlit_app.py
 
 ## 🚀 Deployment
 
-### AWS App Runner (Recommended)
+### Render (Best Free Option) ⭐
 
-AWS App Runner provides excellent Python support and is perfect for BookBrain:
+Render offers the best free tier for BookBrain - **750 hours/month free forever**:
 
-1. **Sign up** for an AWS account at [aws.amazon.com](https://aws.amazon.com)
-2. **Go to AWS App Runner** console and click "Create service"
-3. **Connect your GitHub** account and select your BookBrain repository
+1. **Sign up** at [render.com](https://render.com) with your GitHub account
+2. **Click "New +"** and select "Web Service"
+3. **Connect your GitHub** and select your BookBrain repository
 4. **Configure the service:**
-   - Runtime: Docker
-   - Port: 8080
-   - CPU: 1 vCPU, Memory: 2 GB
+   - Name: `bookbrain-app`
+   - Environment: `Python 3`
+   - Build Command: `pip install -r requirements.txt && playwright install --with-deps`
+   - Start Command: `streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0`
 5. **Set environment variables:**
    - `OPENAI_API_KEY`: Your OpenRouter or OpenAI API key
    - `OPENROUTER_MODEL`: (Optional) Specify a different model
 6. **Deploy!** Your app will be live in 5-10 minutes
 
-**Live Demo:** [BookBrain on AWS](https://bookbrain-app.awsapprunner.com) *(Coming soon)*
+**Live Demo:** [BookBrain on Render](https://bookbrain-app.onrender.com) *(Coming soon)*
 
-📖 **Detailed AWS Deployment Guide:** See [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md)
+### Alternative Free Options
 
-### Alternative Deployment Options
-
-- **Railway:** Use the provided `railway.json` configuration
-- **Render:** Use the provided `requirements.txt` and `Procfile`
-- **Heroku:** Use the provided `requirements.txt` and `Procfile`
-- **Streamlit Cloud:** May have compatibility issues with ChromaDB
+- **Railway:** $5 credit monthly (good for demos)
+- **AWS App Runner:** 750 hours free for first 12 months
+- **Streamlit Cloud:** 3 apps free (may have ChromaDB issues)
 - **Local:** Follow the setup instructions above
+
+### Paid Options (Professional)
+
+- **AWS App Runner:** ~$13/month (after free tier)
+- **Heroku:** ~$7/month (no free tier)
+- **DigitalOcean App Platform:** ~$5/month
 
 ---
 
