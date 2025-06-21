@@ -112,21 +112,22 @@ The app will open in your browser at `http://localhost:8501`
 
 ```
 bookbrain/
-├── streamlit_app.py          # Main Streamlit application
-├── pipeline.py               # Core processing pipeline
+├── chroma_utils.py           # ChromaDB and semantic search utilities
+├── epub_utils.py             # EPUB processing utilities
+├── LICENSE                   # License file
+├── llm_utils.py              # LLM API integration
 ├── pages/                    # Streamlit pages
-│   ├── 1_Summary.py         # Summary generation page
-│   ├── 2_Review.py          # Review generation page
-│   ├── 3_MCQ.py             # MCQ quiz page
-│   └── 4_QA.py              # Q&A page
-├── utils/                    # Utility modules
-│   ├── chroma_utils.py      # ChromaDB and semantic search
-│   ├── llm_utils.py         # LLM API integration
-│   ├── epub_utils.py        # EPUB processing
-│   ├── playwright_utils.py  # Web scraping utilities
-│   └── sidebar_utils.py     # Navigation sidebar
+│   ├── 1_Summary.py          # Summary generation page
+│   ├── 2_Review.py           # Review generation page
+│   ├── 3_MCQ.py              # MCQ quiz page
+│   └── 4_QA.py               # Q&A page
+├── pipeline.py               # Core processing pipeline
+├── playwright_utils.py       # Web scraping utilities
+├── README.md                 # Project documentation
 ├── requirements.txt          # Python dependencies
-└── README.md                # This file
+├── sidebar_utils.py          # Sidebar navigation
+├── streamlit_app.py          # Main Streamlit application
+├── wikisource_scraper.py     # Wiki scraping utilities
 ```
 
 ---
