@@ -72,24 +72,32 @@ streamlit run streamlit_app.py
 
 ## 🚀 Deployment
 
-### Streamlit Cloud (Recommended)
+### AWS App Runner (Recommended)
 
-The easiest way to deploy BookBrain is using Streamlit Cloud:
+AWS App Runner provides excellent Python support and is perfect for BookBrain:
 
-1. **Fork this repository** to your GitHub account
-2. **Sign up for Streamlit Cloud** at [share.streamlit.io](https://share.streamlit.io)
-3. **Connect your GitHub account** and select this repository
-4. **Set environment variables:**
+1. **Sign up** for an AWS account at [aws.amazon.com](https://aws.amazon.com)
+2. **Go to AWS App Runner** console and click "Create service"
+3. **Connect your GitHub** account and select your BookBrain repository
+4. **Configure the service:**
+   - Runtime: Docker
+   - Port: 8080
+   - CPU: 1 vCPU, Memory: 2 GB
+5. **Set environment variables:**
    - `OPENAI_API_KEY`: Your OpenRouter or OpenAI API key
    - `OPENROUTER_MODEL`: (Optional) Specify a different model
-5. **Deploy!** Your app will be live in minutes
+6. **Deploy!** Your app will be live in 5-10 minutes
 
-**Live Demo:** [BookBrain on Streamlit Cloud](https://bookbrain.streamlit.app) *(Coming soon)*
+**Live Demo:** [BookBrain on AWS](https://bookbrain-app.awsapprunner.com) *(Coming soon)*
+
+📖 **Detailed AWS Deployment Guide:** See [AWS_DEPLOYMENT.md](AWS_DEPLOYMENT.md)
 
 ### Alternative Deployment Options
 
+- **Railway:** Use the provided `railway.json` configuration
+- **Render:** Use the provided `requirements.txt` and `Procfile`
 - **Heroku:** Use the provided `requirements.txt` and `Procfile`
-- **Docker:** Build and run with the included `Dockerfile`
+- **Streamlit Cloud:** May have compatibility issues with ChromaDB
 - **Local:** Follow the setup instructions above
 
 ---
