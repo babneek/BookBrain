@@ -19,6 +19,8 @@ BookBrain is a modern, open-source app for reading, exploring, and learning from
 - **Automatic MCQ retry** for reliable quiz generation
 - **Download, regenerate, and edit all AI outputs**
 - **Motivational feedback** after MCQ quizzes (e.g., "Excellent!", "Better luck next time!")
+- **Semantic search** with ChromaDB for advanced content exploration
+- **Content versioning** to track changes and improvements
 
 ---
 
@@ -41,66 +43,56 @@ BookBrain is a modern, open-source app for reading, exploring, and learning from
 
 ---
 
-## Setup
+## Local Setup
 
-### 1. Clone the repo
+### Prerequisites
+- Python 3.10 or higher
+- Git
+
+### 1. Clone the repository
 ```bash
 git clone https://github.com/babneek/BookBrain.git
 cd BookBrain
 ```
 
-### 2. Install dependencies
+### 2. Create and activate a virtual environment
+```bash
+# Windows
+python -m venv .venv
+.venv\Scripts\activate
+
+# macOS/Linux
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Install Playwright browsers (for Wiki scraping)
+### 4. Install Playwright browsers (for Wiki scraping)
 ```bash
 playwright install
 ```
 
-### 4. Configure your LLM API
-- BookBrain uses OpenRouter, OpenAI, or your preferred LLM API for all AI features.
-- Set your API key in a `.env` file or as an environment variable (see `.env.example` if provided).
+### 5. Configure your LLM API
+Create a `.env` file in the project root with your API key:
+```bash
+OPENAI_API_KEY=your_api_key_here
+```
 
-### 5. Run the app
+**Supported APIs:**
+- OpenAI API
+- OpenRouter API
+- Any other compatible LLM API
+
+### 6. Run the app
 ```bash
 streamlit run streamlit_app.py
 ```
 
----
-
-## 🚀 Deployment
-
-### Render (Best Free Option) ⭐
-
-Render offers the best free tier for BookBrain - **750 hours/month free forever**. It's the perfect choice for hosting your project.
-
-1.  **Sign up** at [render.com](https://render.com) with your GitHub account.
-2.  **Click "New +"** and select "Web Service".
-3.  **Connect your GitHub** and select your BookBrain repository.
-4.  **Configure the service:**
-    *   Name: `bookbrain-app`
-    *   Environment: `Python 3`
-    *   Build Command: `pip install -r requirements.txt && playwright install --with-deps`
-    *   Start Command: `streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0`
-5.  **Go to the "Environment" tab** and add your API key:
-    *   `OPENAI_API_KEY`: Your key from OpenRouter or OpenAI
-    *   `OPENROUTER_MODEL`: (Optional) The model name.
-6.  **Deploy!** Your app will be live in minutes on a free `.onrender.com` URL.
-
-### Alternative Deployment Options
-
--   **Railway:** A great platform, but the free trial expires.
--   **AWS App Runner:** Powerful, with a 12-month free tier.
--   **Streamlit Cloud:** Simple, but may have compatibility issues with ChromaDB.
--   **Local:** Follow the setup instructions in this README.
-
-### Paid Options (Professional)
-
-- **AWS App Runner:** ~$13/month (after free tier)
-- **Heroku:** ~$7/month (no free tier)
-- **DigitalOcean App Platform:** ~$5/month
+The app will open in your browser at `http://localhost:8501`
 
 ---
 
@@ -116,12 +108,81 @@ Render offers the best free tier for BookBrain - **750 hours/month free forever*
 
 ---
 
+## Project Structure
+
+```
+bookbrain/
+├── streamlit_app.py          # Main Streamlit application
+├── pipeline.py               # Core processing pipeline
+├── pages/                    # Streamlit pages
+│   ├── 1_Summary.py         # Summary generation page
+│   ├── 2_Review.py          # Review generation page
+│   ├── 3_MCQ.py             # MCQ quiz page
+│   └── 4_QA.py              # Q&A page
+├── utils/                    # Utility modules
+│   ├── chroma_utils.py      # ChromaDB and semantic search
+│   ├── llm_utils.py         # LLM API integration
+│   ├── epub_utils.py        # EPUB processing
+│   ├── playwright_utils.py  # Web scraping utilities
+│   └── sidebar_utils.py     # Navigation sidebar
+├── requirements.txt          # Python dependencies
+└── README.md                # This file
+```
+
+---
+
 ## Troubleshooting
 
-- **API errors:** Make sure your LLM API key is set and valid.
-- **Playwright errors:** Run `playwright install` and ensure you have the required browsers.
-- **ChromaDB issues:** The app stores embeddings in `./chroma_data` by default.
-- **Q/A or MCQ not working:** Make sure you have selected a chapter and uploaded valid content.
+### Common Issues
+
+- **API errors:** Make sure your LLM API key is set in the `.env` file and is valid.
+- **Playwright errors:** Run `playwright install` to install required browsers.
+- **ChromaDB issues:** The app stores embeddings in `./chroma_data` by default. Make sure you have write permissions.
+- **Q/A or MCQ not working:** Ensure you have selected a chapter and uploaded valid content.
+- **Import errors:** Make sure you're running the app from the project root directory.
+
+### Getting Help
+
+If you encounter any issues:
+1. Check that all dependencies are installed correctly
+2. Verify your API key is set and working
+3. Ensure you're using Python 3.10 or higher
+4. Try running `streamlit run streamlit_app.py --logger.level debug` for detailed logs
+
+---
+
+## Features in Detail
+
+### Semantic Search
+- Uses ChromaDB for storing and retrieving document embeddings
+- Enables advanced content search across your uploaded books
+- Automatically indexes chapters for quick retrieval
+
+### Content Versioning
+- Tracks different versions of summaries, reviews, and MCQs
+- Allows you to compare and revert to previous versions
+- Maintains history of your AI-generated content
+
+### Robust Error Handling
+- Graceful fallbacks when APIs are unavailable
+- Automatic retry mechanisms for failed requests
+- User-friendly error messages
+
+---
+
+## Contributing
+
+This project is open for contributions! Feel free to:
+- Report bugs or issues
+- Suggest new features
+- Submit pull requests
+- Improve documentation
+
+---
+
+## License
+
+This project is for evaluation and educational purposes. Feel free to use and modify for your own projects.
 
 ---
 
@@ -131,9 +192,5 @@ Render offers the best free tier for BookBrain - **750 hours/month free forever*
 
 ---
 
-## License & Contributing
-
-This project is for evaluation/demo purposes only. Pull requests and feedback are welcome!
-
-- **GitHub:** [https://github.com/babneek/BookBrain](https://github.com/babneek/BookBrain)
-- **Author:** [babneek](https://github.com/babneek) 
+**GitHub:** [https://github.com/babneek/BookBrain](https://github.com/babneek/BookBrain)  
+**Author:** [babneek](https://github.com/babneek) 
