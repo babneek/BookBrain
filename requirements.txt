@@ -9,3 +9,5 @@ beautifulsoup4
 PyPDF2
 wikipedia
 protobuf==3.20.3
+requests
+lxml
