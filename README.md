@@ -72,31 +72,28 @@ streamlit run streamlit_app.py
 
 ## 🚀 Deployment
 
-### Render (Best Free Option) ⭐
+### Railway (Recommended Free Option) ⭐
 
-Render offers the best free tier for BookBrain - **750 hours/month free forever**:
+Railway offers a great free tier with a simple deployment process. It's an excellent choice for hosting BookBrain.
 
-1. **Sign up** at [render.com](https://render.com) with your GitHub account
-2. **Click "New +"** and select "Web Service"
-3. **Connect your GitHub** and select your BookBrain repository
-4. **Configure the service:**
-   - Name: `bookbrain-app`
-   - Environment: `Python 3`
-   - Build Command: `pip install -r requirements.txt && playwright install --with-deps`
-   - Start Command: `streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0`
-5. **Set environment variables:**
-   - `OPENAI_API_KEY`: Your OpenRouter or OpenAI API key
-   - `OPENROUTER_MODEL`: (Optional) Specify a different model
-6. **Deploy!** Your app will be live in 5-10 minutes
+1.  **Sign up** at [railway.app](https://railway.app) with your GitHub account.
+2.  **Click "New Project"** and select "Deploy from GitHub repo".
+3.  **Select your BookBrain repository**. Railway will automatically detect the settings.
+4.  **Go to the "Variables" tab** for your new service and add your API key:
+    *   `OPENAI_API_KEY`: Your key from OpenRouter or OpenAI
+    *   `OPENROUTER_MODEL`: (Optional) The model name, e.g., `mistralai/mistral-7b-instruct`
+5.  **Go to the "Settings" tab** and generate a domain to get a public URL.
 
-**Live Demo:** [BookBrain on Render](https://bookbrain-app.onrender.com) *(Coming soon)*
+That's it! Railway's Nixpacks builder will automatically install Python dependencies and Playwright browsers for you.
 
-### Alternative Free Options
+**Live Demo:** [BookBrain on Railway](https://bookbrain.up.railway.app) *(Coming soon)*
 
-- **Railway:** $5 credit monthly (good for demos)
-- **AWS App Runner:** 750 hours free for first 12 months
-- **Streamlit Cloud:** 3 apps free (may have ChromaDB issues)
-- **Local:** Follow the setup instructions above
+### Alternative Deployment Options
+
+-   **Render:** A great free alternative. Use the `render.yaml` config.
+-   **AWS App Runner:** Powerful, with a 12-month free tier.
+-   **Streamlit Cloud:** Simple, but may have compatibility issues with ChromaDB.
+-   **Local:** Follow the setup instructions in this README.
 
 ### Paid Options (Professional)
 
