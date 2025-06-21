@@ -17,6 +17,8 @@ if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 st.set_page_config(page_title="BookBrain – Your AI Book Assistant", layout="wide", initial_sidebar_state="expanded", menu_items={"Get Help": None, "Report a bug": None, "About": None})
+show_sidebar()
+
 st.markdown("""
 # 📘 BookBrain – Your AI Book Assistant
 Welcome to BookBrain! Upload an EPUB, PDF, or enter a Wiki URL to extract chapters, generate AI-powered summaries, reviews, MCQs, and more.
@@ -169,8 +171,6 @@ if "extracted_text" in st.session_state:
         unsafe_allow_html=True,
     )
     st.markdown(f"<div style='background:#fff; border-radius:12px; padding:1.5em; margin-bottom:2em; max-height:400px; overflow:auto; font-size:1.1em; line-height:1.7;'>{st.session_state['extracted_text'][:5000].replace(chr(10),'<br>')}{'...' if len(st.session_state['extracted_text'])>5000 else ''}</div>", unsafe_allow_html=True)
-
-show_sidebar(current_page="Home")
 
 st.markdown("---")
 st.markdown("<center>Made with ❤️ by BookBrain</center>", unsafe_allow_html=True)

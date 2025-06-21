@@ -14,7 +14,7 @@ def show_logo_and_branding():
     )
 
 def main():
-    show_sidebar(current_page="Summary")
+    show_sidebar()
     show_logo_and_branding()
     if "extracted_text" not in st.session_state:
         st.warning("No text found. Please upload a file or process a Wiki URL on the Home page.")

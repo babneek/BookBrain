@@ -46,13 +46,32 @@ def generate_review(text: str) -> str:
 
 def generate_mcqs(text: str, num_questions: int = 5) -> str:
     prompt = f"""
-    Generate {num_questions} multiple-choice questions (MCQs) from the following text. For each question, provide 4 options (A, B, C, D), indicate the correct answer, and provide a brief explanation.\n\nText:\n{text}\n"""
+    You are a helpful assistant designed to create quizzes.
+    Based on the text provided, generate exactly {num_questions} multiple-choice questions (MCQs).
+    Each question must have a question, 4 options (A, B, C, D), a correct answer, and a brief explanation.
+
+    Here is the required format for each question:
+    1. [Question text]?
+    A. [Option A]
+    B. [Option B]
+    C. [Option C]
+    D. [Option D]
+    Correct answer: [A, B, C, or D]
+    Explanation: [Brief explanation of the answer].
+
+    Please strictly follow this format. Do not add any extra text or deviate from the structure.
+
+    Text to use for generating questions:
+    ---
+    {text}
+    ---
+    """
     try:
         response = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=1200,
+            max_tokens=1500, # Increased tokens for longer explanations
         )
         return response.choices[0].message.content.strip()
     except Exception as e:

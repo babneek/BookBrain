@@ -3,15 +3,18 @@ from llm_utils import generate_mcqs
 from sidebar_utils import show_sidebar
 import re
 
-def try_generate_mcqs(text, n=5, max_retries=3):
-    for attempt in range(max_retries):
+def try_generate_mcqs(text, n=5, max_retries=2):
+    """Attempt to generate and parse MCQs, retrying on failure."""
+    for _ in range(max_retries):
         mcq_text = generate_mcqs(text, n)
-        parsed = parse_mcqs(mcq_text)
-        if parsed:
-            return mcq_text, parsed
-    return mcq_text, parsed  # Return last attempt (even if empty)
+        if mcq_text and not mcq_text.startswith("[Error]"):
+            parsed = parse_mcqs(mcq_text)
+            if parsed:
+                return mcq_text, parsed
+    return "Could not generate valid MCQs.", []
 
 def show_logo_and_branding():
+    """Displays the app logo and branding in the main content area."""
     st.markdown(
         """
         <div style='display: flex; align-items: center; gap: 1em; margin-bottom: 1em;'>
@@ -23,186 +26,157 @@ def show_logo_and_branding():
     )
 
 def parse_mcqs(mcq_text):
-    try:
-        questions = re.split(r'\n\d+\. ', mcq_text)
-        questions = [q.strip() for q in questions if q.strip()]
-        parsed = []
-        for q in questions:
-            q_lines = q.split('\n')
-            if len(q_lines) < 3:
-                continue
-            question = q_lines[0]
-            options = [line for line in q_lines[1:] if re.match(r'^[A-D]\.', line.strip())]
-            answer_line = next((line for line in q_lines if 'Correct answer' in line or 'Answer:' in line), None)
-            explanation = next((line for line in q_lines if 'Explanation' in line), None)
-            if not options or not answer_line:
-                continue
-            correct_option = re.search(r'([A-D])', answer_line)
-            correct = correct_option.group(1) if correct_option else None
-            parsed.append({
-                'question': question,
-                'options': options,
-                'answer': correct,
-                'answer_line': answer_line,
-                'explanation': explanation
-            })
-        return parsed
-    except Exception as e:
-        st.error(f"Error parsing MCQs: {e}")
-        return []
+    """
+    Parses raw text from an LLM into a structured list of MCQ dictionaries
+    using a more robust regex to handle formatting variations.
+    """
+    mcq_pattern = re.compile(
+        r'(\d+)\.\s*(.*?)\n\s*'
+        r'(A\.\s*.*?)\n\s*'
+        r'(B\.\s*.*?)\n\s*'
+        r'(C\.\s*.*?)\n\s*'
+        r'(D\.\s*.*?)\n\s*'
+        r'Correct answer:\s*([A-D])\n'
+        r'(?:Explanation:\s*(.*?))?',
+        re.DOTALL | re.MULTILINE
+    )
+    
+    parsed = []
+    matches = mcq_pattern.finditer(mcq_text)
+    
+    for match in matches:
+        question = match.group(2).strip()
+        options = [
+            match.group(3).strip(),
+            match.group(4).strip(),
+            match.group(5).strip(),
+            match.group(6).strip()
+        ]
+        answer = match.group(7).strip()
+        explanation = match.group(8).strip() if match.group(8) else "No explanation provided."
+        
+        parsed.append({
+            'question': question,
+            'options': options,
+            'answer': answer,
+            'explanation': explanation
+        })
+    return parsed
 
 def interactive_mcq_quiz(parsed_mcqs):
-    if 'mcq_score' not in st.session_state:
-        st.session_state['mcq_score'] = 0
-    if 'mcq_index' not in st.session_state:
-        st.session_state['mcq_index'] = 0
-    if 'mcq_done' not in st.session_state:
-        st.session_state['mcq_done'] = False
-    if 'mcq_show_feedback' not in st.session_state:
-        st.session_state['mcq_show_feedback'] = False
-    if 'mcq_last_correct' not in st.session_state:
-        st.session_state['mcq_last_correct'] = False
+    """Manages the interactive MCQ quiz state and UI."""
+    st.session_state.setdefault('mcq_score', 0)
+    st.session_state.setdefault('mcq_index', 0)
+    st.session_state.setdefault('mcq_done', False)
+    st.session_state.setdefault('mcq_show_feedback', False)
+    st.session_state.setdefault('mcq_last_correct', False)
+
+    idx = st.session_state.mcq_index
     total = len(parsed_mcqs)
-    idx = st.session_state['mcq_index']
-    score = st.session_state['mcq_score']
-    if st.session_state['mcq_done']:
-        # Colorful result message based on score
-        if score == total:
-            msg = "🎉 <span style='color:#219653; font-weight:bold; font-size:1.3em;'>Excellent! You got a perfect score!</span>"
-            bg = "#e6f9ed"
-        elif score >= total * 0.7:
-            msg = "😊 <span style='color:#2d9cdb; font-weight:bold; font-size:1.2em;'>Great job! You scored high!</span>"
-            bg = "#eaf6ff"
-        elif score >= total * 0.4:
-            msg = "👍 <span style='color:#f2c94c; font-weight:bold; font-size:1.1em;'>Not bad! Keep practicing.</span>"
-            bg = "#fffbe6"
-        elif score == 1:
-            msg = "😅 <span style='color:#eb5757; font-weight:bold; font-size:1.1em;'>Better luck next time!</span>"
-            bg = "#ffeaea"
-        else:
-            msg = "😢 <span style='color:#eb5757; font-weight:bold; font-size:1.1em;'>Don't give up! Try again.</span>"
-            bg = "#ffeaea"
-        st.markdown(f"""
-        <div style='background:{bg}; border-radius:12px; padding:1.5em; margin-bottom:1.2em; text-align:center;'>
-            <div style='font-size:1.3em; font-weight:bold; color:#2d6a4f; margin-bottom:0.5em;'>Quiz Complete! Your Score: {score} / {total}</div>
-            {msg}
-        </div>
-        """, unsafe_allow_html=True)
-        # Download, Regenerate, Edit buttons below result
-        col1, col2, col3 = st.columns([1,1,2])
-        with col1:
-            if st.button("✏️ Edit", key="edit_btn_done"):
-                st.session_state["edit_mode"] = True
-        with col2:
-            if st.button("🔄 Regenerate MCQs", key="regen_btn_done"):
-                with st.spinner("Regenerating MCQs..."):
-                    text = st.session_state["extracted_text"]
-                    mcq_text, parsed_mcqs = try_generate_mcqs(text, 5)
-                    st.session_state["mcqs"] = mcq_text
-                    st.session_state["parsed_mcqs"] = parsed_mcqs
-                    st.rerun()
-        with col3:
-            st.download_button("⬇️ Download MCQs", st.session_state["mcqs"], file_name="mcqs.txt")
-        if st.button("🔁 Retry Quiz"):
+
+    if st.session_state.mcq_done:
+        score = st.session_state.mcq_score
+        st.success(f"🎉 Quiz Complete! Your final score is: {score}/{total}")
+        if st.button("🔁 Retry Quiz", key="retry_quiz"):
             for k in list(st.session_state.keys()):
-                if k.startswith("mcq_") or k in ['mcq_score','mcq_index','mcq_done','mcq_show_feedback','mcq_last_correct']:
+                if isinstance(k, str) and k.startswith('mcq_'):
                     del st.session_state[k]
             st.rerun()
         return
+
     q = parsed_mcqs[idx]
-    st.markdown(f"<div style='background:#f8f9fa; border-radius:12px; box-shadow:0 1px 6px #0001; padding:1.2em; margin-bottom:1.2em;'><b style='font-size:1.1em;'>Q{idx+1}. {q['question']}</b>", unsafe_allow_html=True)
-    user_ans = st.radio("Select an option:", q['options'], key=f"mcq_{idx}")
-    if not st.session_state['mcq_show_feedback']:
-        if st.button("Submit", key=f"mcq_btn_{idx}"):
-            if user_ans.startswith(q['answer']):
-                st.session_state['mcq_last_correct'] = True
-                st.session_state['mcq_score'] += 1
-            else:
-                st.session_state['mcq_last_correct'] = False
-            st.session_state['mcq_show_feedback'] = True
-            st.rerun()
-    else:
-        if st.session_state['mcq_last_correct']:
+    st.markdown(f"**Question {idx + 1}/{total}:**")
+    st.markdown(f"*{q['question']}*")
+
+    user_ans = st.radio("Select your answer:", q['options'], key=f"mcq_radio_{idx}")
+
+    if st.session_state.mcq_show_feedback:
+        if st.session_state.mcq_last_correct:
             st.success("Correct!")
         else:
-            st.error(f"Incorrect. {q['answer_line']}")
-        if q['explanation']:
-            st.info(q['explanation'])
+            st.error(f"Incorrect. The correct answer was **{q['answer']}**.")
+        st.info(f"**Explanation:** {q['explanation']}")
+
         if idx + 1 < total:
-            if st.button("Next", key=f"mcq_next_{idx}"):
-                st.session_state['mcq_index'] += 1
-                st.session_state['mcq_show_feedback'] = False
+            if st.button("Next Question", key=f"next_q_btn_{idx}"):
+                st.session_state.mcq_index += 1
+                st.session_state.mcq_show_feedback = False
                 st.rerun()
         else:
-            if st.button("Finish Quiz", key=f"mcq_finish_{idx}"):
-                st.session_state['mcq_done'] = True
-                st.session_state['mcq_show_feedback'] = False
+            if st.button("Finish Quiz", key=f"finish_quiz_btn"):
+                st.session_state.mcq_done = True
+                st.session_state.mcq_show_feedback = False
                 st.rerun()
-    st.markdown(f"<div style='margin-top:1em; color:#888;'>Question {idx+1} of {total} | Score: {score}</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    else:
+        if st.button("Submit", key=f"submit_btn_{idx}"):
+            if user_ans is None:
+                st.warning("⚠️ Please select an answer before submitting.")
+            else:
+                selected_letter = user_ans.split('.')[0].strip().upper()
+                correct_letter = q['answer'].strip().upper()
+
+                if selected_letter == correct_letter:
+                    st.session_state.mcq_score += 1
+                    st.session_state.mcq_last_correct = True
+                else:
+                    st.session_state.mcq_last_correct = False
+
+                st.session_state.mcq_show_feedback = True
+                st.rerun()
+    
+    st.progress((idx + 1) / total)
 
 def main():
-    show_sidebar(current_page="MCQ")
+    """Main function to render the MCQ page."""
+    show_sidebar()
     show_logo_and_branding()
+
     if "extracted_text" not in st.session_state:
-        st.warning("No text found. Please upload a file or process a Wiki URL on the Home page.")
-        if st.button("⬅️ Back to Home", key="back_home_btn"):
+        st.warning("Please upload a file or enter a URL on the Home page first.")
+        if st.button("⬅️ Back to Home", key="mcq_back_home"):
             st.switch_page("streamlit_app.py")
         return
-    # Always use the currently selected chapter
-    text = st.session_state["extracted_text"]
-    if "mcqs" not in st.session_state:
-        with st.spinner("Generating MCQs..."):
-            try:
-                mcq_text, parsed_mcqs = try_generate_mcqs(text, 5)
-                st.session_state["mcqs"] = mcq_text
-                st.session_state["parsed_mcqs"] = parsed_mcqs
-            except Exception as e:
-                st.error(f"Failed to generate MCQs: {e}")
-                return
-    if "edit_mode" not in st.session_state:
-        st.session_state["edit_mode"] = False
-    st.markdown("""
-    <div style='background: #fff; border-radius: 16px; box-shadow: 0 2px 12px #0001; padding: 2em 2em 1em 2em; margin-bottom: 2em;'>
-        <h2 style='margin-top:0;'>📝 MCQ Quiz</h2>
-    """, unsafe_allow_html=True)
-    if not st.session_state["edit_mode"]:
-        col1, col2, col3 = st.columns([1,1,2])
-        with col1:
-            if st.button("✏️ Edit", key="edit_btn"):
-                st.session_state["edit_mode"] = True
-        with col2:
-            if st.button("🔄 Regenerate MCQs", key="regen_btn"):
-                with st.spinner("Regenerating MCQs..."):
-                    # Always use the currently selected chapter
-                    text = st.session_state["extracted_text"]
-                    mcq_text, parsed_mcqs = try_generate_mcqs(text, 5)
-                    st.session_state["mcqs"] = mcq_text
-                    st.session_state["parsed_mcqs"] = parsed_mcqs
-                    st.rerun()
-        with col3:
-            st.download_button("⬇️ Download MCQs", st.session_state["mcqs"], file_name="mcqs.txt")
-        st.markdown("<br>", unsafe_allow_html=True)
-        parsed_mcqs = st.session_state.get("parsed_mcqs")
-        if not parsed_mcqs:
-            st.error("No valid MCQs found after several attempts. Please try editing or regenerating the MCQs.")
-        else:
-            interactive_mcq_quiz(parsed_mcqs)
-    else:
-        new_mcqs = st.text_area("Edit MCQs", value=st.session_state["mcqs"], height=300, key="mcqs_edit")
-        colA, colB = st.columns([1,1])
-        with colA:
-            if st.button("💾 Save", key="save_btn"):
-                st.session_state["mcqs"] = new_mcqs
-                st.session_state["edit_mode"] = False
-                st.success("MCQs updated!")
-        with colB:
-            if st.button("❌ Cancel", key="cancel_btn"):
-                st.session_state["edit_mode"] = False
-        st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+
+    text = st.session_state.extracted_text
+    
+    if "parsed_mcqs" not in st.session_state:
+        with st.spinner("Generating MCQs for you..."):
+            mcq_text, parsed_mcqs = try_generate_mcqs(text)
+            st.session_state.mcqs = mcq_text
+            st.session_state.parsed_mcqs = parsed_mcqs
+    
+    parsed_mcqs = st.session_state.get("parsed_mcqs", [])
+
     st.markdown("---")
-    st.markdown("<center style='color:#888;'>Made with ❤️ by BookBrain</center>", unsafe_allow_html=True)
+    if not parsed_mcqs:
+        st.error("Failed to generate or parse MCQs from the text. Please try again.")
+    else:
+        st.header("📝 Take a Quiz!")
+        interactive_mcq_quiz(parsed_mcqs)
+
+    st.markdown("---")
+    st.header("Manage MCQs")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔄 Regenerate MCQs", key="regenerate_mcqs_btn"):
+            with st.spinner("Getting a fresh set of questions..."):
+                mcq_text, parsed_mcqs = try_generate_mcqs(text)
+                st.session_state.mcqs = mcq_text
+                st.session_state.parsed_mcqs = parsed_mcqs
+                for k in list(st.session_state.keys()):
+                    if isinstance(k, str) and k.startswith('mcq_'):
+                        del st.session_state[k]
+                st.rerun()
+    with col2:
+        st.download_button(
+            label="⬇️ Download MCQs",
+            data=st.session_state.get("mcqs", "No MCQs available."),
+            file_name="mcqs.txt",
+            key="download_mcqs_btn"
+        )
 
 if __name__ == "__main__":
     main() 
+
+
