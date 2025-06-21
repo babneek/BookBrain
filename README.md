@@ -70,6 +70,30 @@ streamlit run streamlit_app.py
 
 ---
 
+## 🚀 Deployment
+
+### Streamlit Cloud (Recommended)
+
+The easiest way to deploy BookBrain is using Streamlit Cloud:
+
+1. **Fork this repository** to your GitHub account
+2. **Sign up for Streamlit Cloud** at [share.streamlit.io](https://share.streamlit.io)
+3. **Connect your GitHub account** and select this repository
+4. **Set environment variables:**
+   - `OPENAI_API_KEY`: Your OpenRouter or OpenAI API key
+   - `OPENROUTER_MODEL`: (Optional) Specify a different model
+5. **Deploy!** Your app will be live in minutes
+
+**Live Demo:** [BookBrain on Streamlit Cloud](https://bookbrain.streamlit.app) *(Coming soon)*
+
+### Alternative Deployment Options
+
+- **Heroku:** Use the provided `requirements.txt` and `Procfile`
+- **Docker:** Build and run with the included `Dockerfile`
+- **Local:** Follow the setup instructions above
+
+---
+
 ## Usage
 
 1. **Upload an EPUB, PDF, or enter a Wiki URL.**
