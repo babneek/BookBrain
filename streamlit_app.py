@@ -118,28 +118,20 @@ elif wiki_url and wiki_btn:
         text = ""
         if "wikisource.org" in wiki_url:
             text_path = "wikisource_text.txt"
-            # No screenshot_path needed
             result = subprocess.run([
                 sys.executable, "wikisource_scraper.py", wiki_url, text_path, "unused_screenshot.png"
             ], capture_output=True, text=True)
-            # Always show scraper output for debugging
-            st.write("Scraper stdout:", result.stdout)
-            st.write("Scraper stderr:", result.stderr)
-            st.write("Current directory:", os.getcwd())
-            st.write("Files in directory:", os.listdir())
             if result.returncode != 0:
                 st.error(f"Scraper error: {result.stderr}")
-            # File existence check and debug output
             if not os.path.exists(text_path):
                 st.error(f"File not found: {text_path}")
             else:
                 with open(text_path, "r", encoding="utf-8") as f:
                     text = f.read()
-                # Indicate which method was used
                 if "[RequestsBS4] Scraping successful" in result.stdout:
-                    st.info("Used requests+BeautifulSoup fallback for Wikisource scraping.")
+                    st.info("Wiki text extracted and ready for AI processing!")
                 elif "Scraping and screenshot successful" in result.stdout:
-                    st.success("Used Playwright for Wikisource scraping (screenshot available).")
+                    st.success("Wiki text extracted and ready for AI processing!")
                 else:
                     st.warning("Wikisource scraping completed, but method could not be determined.")
         elif "wikipedia.org" in wiki_url:
