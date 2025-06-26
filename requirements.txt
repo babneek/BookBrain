@@ -11,3 +11,4 @@ wikipedia
 protobuf==3.20.3
 requests
 lxml
+pysqlite3-binary
