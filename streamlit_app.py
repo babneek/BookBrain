@@ -123,17 +123,17 @@ elif wiki_url and wiki_btn:
             result = subprocess.run([
                 sys.executable, "wikisource_scraper.py", wiki_url, text_path, screenshot_path
             ], capture_output=True, text=True)
+            # Always show scraper output for debugging
+            st.write("Scraper stdout:", result.stdout)
+            st.write("Scraper stderr:", result.stderr)
+            st.write("Current directory:", os.getcwd())
+            st.write("Files in directory:", os.listdir())
             if result.returncode != 0:
                 st.error(f"Scraper error: {result.stderr}")
-                st.write("Scraper stdout:", result.stdout)
-                st.write("Current directory:", os.getcwd())
-                st.write("Files in directory:", os.listdir())
             else:
                 # File existence check and debug output
                 if not os.path.exists(text_path):
                     st.error(f"File not found: {text_path}")
-                    st.write("Current directory:", os.getcwd())
-                    st.write("Files in directory:", os.listdir())
                 else:
                     with open(text_path, "r", encoding="utf-8") as f:
                         text = f.read()
