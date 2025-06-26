@@ -116,12 +116,11 @@ elif pdf_file:
 elif wiki_url and wiki_btn:
     with st.spinner("⏳ Processing Wiki URL..."):
         text = ""
-        screenshot_bytes = None
         if "wikisource.org" in wiki_url:
             text_path = "wikisource_text.txt"
-            screenshot_path = "wikisource_screenshot.png"
+            # No screenshot_path needed
             result = subprocess.run([
-                sys.executable, "wikisource_scraper.py", wiki_url, text_path, screenshot_path
+                sys.executable, "wikisource_scraper.py", wiki_url, text_path, "unused_screenshot.png"
             ], capture_output=True, text=True)
             # Always show scraper output for debugging
             st.write("Scraper stdout:", result.stdout)
@@ -136,14 +135,9 @@ elif wiki_url and wiki_btn:
             else:
                 with open(text_path, "r", encoding="utf-8") as f:
                     text = f.read()
-                # Only try to read screenshot if it exists
-                if os.path.exists(screenshot_path):
-                    with open(screenshot_path, "rb") as f:
-                        screenshot_bytes = f.read()
-                    st.session_state["screenshot_bytes"] = screenshot_bytes
                 # Indicate which method was used
                 if "[RequestsBS4] Scraping successful" in result.stdout:
-                    st.info("Used requests+BeautifulSoup fallback for Wikisource scraping (no screenshot available).")
+                    st.info("Used requests+BeautifulSoup fallback for Wikisource scraping.")
                 elif "Scraping and screenshot successful" in result.stdout:
                     st.success("Used Playwright for Wikisource scraping (screenshot available).")
                 else:
@@ -166,19 +160,9 @@ elif wiki_url and wiki_btn:
             st.session_state["book_id"] = book_id
             st.success("Wiki text extracted and ready for AI processing!")
 
-# Show screenshot and extracted content after processing
+# Show extracted content after processing
 if "extracted_text" in st.session_state:
     st.markdown("---")
-    if "screenshot_bytes" in st.session_state:
-        st.markdown(
-            """
-            <div style='background-color: #fffbe6; padding: 1em; border-radius: 10px; margin-bottom: 1em;'>
-            <b>Wikisource Screenshot:</b>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.image(st.session_state["screenshot_bytes"], caption="🖼️ Wikisource Screenshot", use_container_width=True)
     st.markdown(
         """
         <div style='background-color: #f0f2f6; padding: 1.5em; border-radius: 10px; margin-bottom: 1em;'>
