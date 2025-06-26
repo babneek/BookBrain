@@ -1,0 +1,21 @@
+# Python Virtual Environment
+.venv/
+venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Local ChromaDB database
+chroma_data/
+
+# Temporary scraper output
+wikisource_text.txt
+wikisource_screenshot.png
+
+# Environment variables
+.env
+
+# IDE-specific folders
+.vscode/
+.idea/

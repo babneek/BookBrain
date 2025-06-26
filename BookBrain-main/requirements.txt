@@ -1,0 +1,14 @@
+streamlit
+playwright
+chromadb
+sentence-transformers
+openai
+python-dotenv
+ebooklib
+beautifulsoup4
+PyPDF2
+wikipedia
+protobuf==3.20.3
+requests
+lxml
+pysqlite3-binary
