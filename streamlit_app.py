@@ -125,12 +125,24 @@ elif wiki_url and wiki_btn:
             ], capture_output=True, text=True)
             if result.returncode != 0:
                 st.error(f"Scraper error: {result.stderr}")
+                st.write("Scraper stdout:", result.stdout)
+                st.write("Current directory:", os.getcwd())
+                st.write("Files in directory:", os.listdir())
             else:
-                with open(text_path, "r", encoding="utf-8") as f:
-                    text = f.read()
-                with open(screenshot_path, "rb") as f:
-                    screenshot_bytes = f.read()
-                st.session_state["screenshot_bytes"] = screenshot_bytes
+                # File existence check and debug output
+                if not os.path.exists(text_path):
+                    st.error(f"File not found: {text_path}")
+                    st.write("Current directory:", os.getcwd())
+                    st.write("Files in directory:", os.listdir())
+                else:
+                    with open(text_path, "r", encoding="utf-8") as f:
+                        text = f.read()
+                    if not os.path.exists(screenshot_path):
+                        st.error(f"Screenshot not found: {screenshot_path}")
+                    else:
+                        with open(screenshot_path, "rb") as f:
+                            screenshot_bytes = f.read()
+                        st.session_state["screenshot_bytes"] = screenshot_bytes
         elif "wikipedia.org" in wiki_url:
             if "/wiki/" in wiki_url:
                 title = wiki_url.split("/wiki/")[-1].replace("_", " ")
