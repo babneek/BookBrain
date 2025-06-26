@@ -4,6 +4,12 @@ BookBrain is a modern, open-source app for reading, exploring, and learning from
 
 ---
 
+## 🚀 Live Demo
+Try BookBrain instantly on Streamlit Cloud:
+[https://bookbrain-u3fr2gvvdxeesm3bfsl4on.streamlit.app/Summary](https://bookbrain-u3fr2gvvdxeesm3bfsl4on.streamlit.app/Summary)
+
+---
+
 ## Features
 
 - **Upload EPUB, PDF, or Wiki (Wikipedia/Wikisource) content**
@@ -21,6 +27,7 @@ BookBrain is a modern, open-source app for reading, exploring, and learning from
 - **Motivational feedback** after MCQ quizzes (e.g., "Excellent!", "Better luck next time!")
 - **Semantic search** with ChromaDB for advanced content exploration
 - **Content versioning** to track changes and improvements
+- **Clean, user-friendly UI with robust error handling**
 
 ---
 
@@ -71,10 +78,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Install Playwright browsers (for Wiki scraping)
+### 4. (Optional, for local Wikisource screenshots) Install Playwright browsers
+If you want to use Playwright for Wikisource scraping (with screenshots) **locally**, run:
 ```bash
 playwright install
 ```
+
+> **Note:** On Streamlit Cloud, Playwright is not used for Wikisource scraping due to browser sandboxing and installation limitations. Instead, the app uses a robust fallback with `requests` and `BeautifulSoup` for text extraction only (no screenshots). This ensures compatibility and reliability in the cloud environment.
 
 ### 5. Configure your LLM API
 Create a `.env` file in the project root with your API key:
@@ -93,6 +103,16 @@ streamlit run streamlit_app.py
 ```
 
 The app will open in your browser at `http://localhost:8501`
+
+---
+
+## How to Deploy on Streamlit Cloud
+
+1. Push your code to a public GitHub repository.
+2. Go to [Streamlit Cloud](https://streamlit.io/cloud) and sign in with GitHub.
+3. Click "New app", select your repo and branch, and set the main file to `streamlit_app.py`.
+4. **No Playwright setup is needed for cloud deployment.** The app will automatically use the requests+BeautifulSoup fallback for Wikisource scraping.
+5. Click "Deploy" and enjoy your app online!
 
 ---
 
@@ -122,7 +142,7 @@ bookbrain/
 │   ├── 3_MCQ.py              # MCQ quiz page
 │   └── 4_QA.py               # Q&A page
 ├── pipeline.py               # Core processing pipeline
-├── playwright_utils.py       # Web scraping utilities
+├── playwright_utils.py       # Web scraping utilities (Playwright for local, requests+bs4 for cloud)
 ├── README.md                 # Project documentation
 ├── requirements.txt          # Python dependencies
 ├── sidebar_utils.py          # Sidebar navigation
@@ -137,7 +157,7 @@ bookbrain/
 ### Common Issues
 
 - **API errors:** Make sure your LLM API key is set in the `.env` file and is valid.
-- **Playwright errors:** Run `playwright install` to install required browsers.
+- **Playwright errors (local only):** Run `playwright install` to install required browsers. On Streamlit Cloud, Playwright is not used.
 - **ChromaDB issues:** The app stores embeddings in `./chroma_data` by default. Make sure you have write permissions.
 - **Q/A or MCQ not working:** Ensure you have selected a chapter and uploaded valid content.
 - **Import errors:** Make sure you're running the app from the project root directory.
