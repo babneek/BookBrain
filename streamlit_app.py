@@ -130,19 +130,24 @@ elif wiki_url and wiki_btn:
             st.write("Files in directory:", os.listdir())
             if result.returncode != 0:
                 st.error(f"Scraper error: {result.stderr}")
+            # File existence check and debug output
+            if not os.path.exists(text_path):
+                st.error(f"File not found: {text_path}")
             else:
-                # File existence check and debug output
-                if not os.path.exists(text_path):
-                    st.error(f"File not found: {text_path}")
+                with open(text_path, "r", encoding="utf-8") as f:
+                    text = f.read()
+                # Only try to read screenshot if it exists
+                if os.path.exists(screenshot_path):
+                    with open(screenshot_path, "rb") as f:
+                        screenshot_bytes = f.read()
+                    st.session_state["screenshot_bytes"] = screenshot_bytes
+                # Indicate which method was used
+                if "[RequestsBS4] Scraping successful" in result.stdout:
+                    st.info("Used requests+BeautifulSoup fallback for Wikisource scraping (no screenshot available).")
+                elif "Scraping and screenshot successful" in result.stdout:
+                    st.success("Used Playwright for Wikisource scraping (screenshot available).")
                 else:
-                    with open(text_path, "r", encoding="utf-8") as f:
-                        text = f.read()
-                    if not os.path.exists(screenshot_path):
-                        st.error(f"Screenshot not found: {screenshot_path}")
-                    else:
-                        with open(screenshot_path, "rb") as f:
-                            screenshot_bytes = f.read()
-                        st.session_state["screenshot_bytes"] = screenshot_bytes
+                    st.warning("Wikisource scraping completed, but method could not be determined.")
         elif "wikipedia.org" in wiki_url:
             if "/wiki/" in wiki_url:
                 title = wiki_url.split("/wiki/")[-1].replace("_", " ")
