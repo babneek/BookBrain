@@ -78,13 +78,10 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. (Optional, for local Wikisource screenshots) Install Playwright browsers
-If you want to use Playwright for Wikisource scraping (with screenshots) **locally**, run:
-```bash
-playwright install
-```
+### 4. (No Playwright needed) Wikisource scraping uses requests+BeautifulSoup
+Wikisource scraping is now handled using requests and BeautifulSoup only. No browser or Playwright setup is required.
 
-> **Note:** On Streamlit Cloud, Playwright is not used for Wikisource scraping due to browser sandboxing and installation limitations. Instead, the app uses a robust fallback with `requests` and `BeautifulSoup` for text extraction only (no screenshots). This ensures compatibility and reliability in the cloud environment.
+> **Note:** Screenshots of Wikisource pages are no longer supported. The app uses a robust fallback with `requests` and `BeautifulSoup` for text extraction only. This ensures compatibility and reliability in all environments.
 
 ### 5. Configure your LLM API
 Create a `.env` file in the project root with your API key:
@@ -157,61 +154,5 @@ bookbrain/
 ### Common Issues
 
 - **API errors:** Make sure your LLM API key is set in the `.env` file and is valid.
-- **Playwright errors (local only):** Run `playwright install` to install required browsers. On Streamlit Cloud, Playwright is not used.
-- **ChromaDB issues:** The app stores embeddings in `./chroma_data` by default. Make sure you have write permissions.
-- **Q/A or MCQ not working:** Ensure you have selected a chapter and uploaded valid content.
-- **Import errors:** Make sure you're running the app from the project root directory.
-
-### Getting Help
-
-If you encounter any issues:
-1. Check that all dependencies are installed correctly
-2. Verify your API key is set and working
-3. Ensure you're using Python 3.10 or higher
-4. Try running `streamlit run streamlit_app.py --logger.level debug` for detailed logs
-
----
-
-## Features in Detail
-
-### Semantic Search
-- Uses ChromaDB for storing and retrieving document embeddings
-- Enables advanced content search across your uploaded books
-- Automatically indexes chapters for quick retrieval
-
-### Content Versioning
-- Tracks different versions of summaries, reviews, and MCQs
-- Allows you to compare and revert to previous versions
-- Maintains history of your AI-generated content
-
-### Robust Error Handling
-- Graceful fallbacks when APIs are unavailable
-- Automatic retry mechanisms for failed requests
-- User-friendly error messages
-
----
-
-## Contributing
-
-This project is open for contributions! Feel free to:
-- Report bugs or issues
-- Suggest new features
-- Submit pull requests
-- Improve documentation
-
----
-
-## License
-
-This project is for evaluation and educational purposes. Feel free to use and modify for your own projects.
-
----
-
-## Screenshots
-
-> Add your screenshots here for a visual overview!
-
----
-
-**GitHub:** [https://github.com/babneek/BookBrain](https://github.com/babneek/BookBrain)  
-**Author:** [babneek](https://github.com/babneek) 
+- **Playwright errors:** Playwright is no longer required. All scraping is handled with requests+BeautifulSoup.
+- **ChromaDB issues:** The app stores embeddings in `

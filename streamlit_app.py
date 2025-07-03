@@ -5,12 +5,12 @@ from PyPDF2 import PdfReader
 import wikipedia
 import sys
 import asyncio
-from playwright_utils import scrape_wikisource_and_screenshot
 from epub_utils import extract_chapters_from_epub
 import subprocess
 from chroma_utils import store_chapter_embeddings
 import time
 from sidebar_utils import show_sidebar
+from wikisource_utils import scrape_wikisource
 
 # --- WINDOWS EVENT LOOP FIX ---
 if sys.platform.startswith("win"):
@@ -119,7 +119,7 @@ elif wiki_url and wiki_btn:
         if "wikisource.org" in wiki_url:
             text_path = "wikisource_text.txt"
             result = subprocess.run([
-                sys.executable, "wikisource_scraper.py", wiki_url, text_path, "unused_screenshot.png"
+                sys.executable, "wikisource_scraper.py", wiki_url, text_path
             ], capture_output=True, text=True)
             if result.returncode != 0:
                 st.error(f"Scraper error: {result.stderr}")
@@ -130,8 +130,6 @@ elif wiki_url and wiki_btn:
                     text = f.read()
                 if "[RequestsBS4] Scraping successful" in result.stdout:
                     st.info("Wiki text extracted and ready for AI processing!")
-                elif "Scraping and screenshot successful" in result.stdout:
-                    st.success("Wiki text extracted and ready for AI processing!")
                 else:
                     st.warning("Wikisource scraping completed, but method could not be determined.")
         elif "wikipedia.org" in wiki_url:
