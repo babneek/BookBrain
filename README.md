@@ -6,7 +6,7 @@ BookBrain is a modern, open-source app for reading, exploring, and learning from
 
 ## 🚀 Live Demo
 Try BookBrain instantly on Streamlit Cloud:
-[https://bookbrain-u3fr2gvvdxeesm3bfsl4on.streamlit.app/Summary](https://bookbrain-u3fr2gvvdxeesm3bfsl4on.streamlit.app/Summary)
+[https://bookbrain-u3fr2gvvdxeesm3bfsl4on.streamlit.app/)
 
 ---
 
